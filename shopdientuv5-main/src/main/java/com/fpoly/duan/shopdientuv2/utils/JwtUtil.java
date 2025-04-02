@@ -11,7 +11,7 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
         // Khóa bí mật: cần đảm bảo đủ độ dài cho HS256
-        private static final String SECRET_KEY = "IUhuQQpG1l3gA5aFf9SjfjRau2WiXYDIORDGWkggqNBIv4aGb5";
+        private static final String SECRET_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMyIsImlhdCI6MTc0MzU4ODAzMywiZXhwIjoxNzQ0MTkyODMzfQ.S7dbRQmUxjVYWRTNyXORTFlVq6ZR0qVgU4PNL8Yxl7Q";
         // Thời gian hết hạn: 7 ngày
         private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7;
 

@@ -64,7 +64,10 @@ public class WebSecurityConfig {
                     return configuration;
                 }))
                 .authorizeHttpRequests(requests -> requests
-                        .anyRequest().permitAll()) // Cho phép tất cả API truy cập không cần đăng nhập
+                        // Yêu cầu phải đăng nhập trước khi truy cập các đường dẫn admin
+                        // Sau khi đã đăng nhập, chỉ ADMIN và STAFF mới được truy cập
+                        .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_STAFF")
+                        .anyRequest().permitAll())
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(customAuthenticationEntryPoint()))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
