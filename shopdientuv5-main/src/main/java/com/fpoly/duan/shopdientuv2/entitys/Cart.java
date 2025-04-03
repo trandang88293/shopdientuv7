@@ -1,6 +1,5 @@
 package com.fpoly.duan.shopdientuv2.entitys;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,7 +10,7 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer cartId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "accountId")
     private Account account;
 }
