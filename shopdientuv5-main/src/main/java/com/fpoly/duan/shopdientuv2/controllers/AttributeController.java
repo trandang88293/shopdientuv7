@@ -4,9 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fpoly.duan.shopdientuv2.entitys.Attribute;
@@ -51,6 +55,39 @@ public class AttributeController {
             responseData.setStatus(false);
             responseData.setMessage("Lỗi khi lấy giá trị thuộc tính: " + e.getMessage());
             return ResponseEntity.badRequest().body(responseData);
+        }
+    }
+
+    // API thêm thuộc tính
+    @PostMapping("/create")
+    public ResponseEntity<ResponseData> createAttribute(@RequestParam String attributeName) {
+        ResponseData responseData = new ResponseData();
+        try {
+            Attribute attribute = attributeService.addAttribute(attributeName);
+            responseData.setStatus(true);
+            responseData.setMessage("Thêm thuộc tính thành công!");
+            responseData.setData(attribute);
+            return ResponseEntity.ok(responseData);
+        } catch (Exception e) {
+            responseData.setStatus(false);
+            responseData.setMessage("Lỗi khi thêm thuộc tính: " + e.getMessage());
+            return ResponseEntity.badRequest().body(responseData);
+        }
+    }
+
+    @PostMapping("/value/create")
+    public ResponseEntity<AttributeValue> addAttributeValue(@RequestBody AttributeValue attributeValue) {
+        AttributeValue savedAttributeValue = attributeService.addAttributeValue(attributeValue);
+        return ResponseEntity.ok(savedAttributeValue);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteAttribute(@PathVariable Integer id) {
+        try {
+            attributeService.deleteAttribute(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

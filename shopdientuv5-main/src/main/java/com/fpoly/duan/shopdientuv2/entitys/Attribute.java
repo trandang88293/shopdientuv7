@@ -4,6 +4,7 @@ package com.fpoly.duan.shopdientuv2.entitys;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -17,6 +18,10 @@ public class Attribute {
 
     private String attributeName;
     
+    @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ProductAttributeValue> productAttributeValues;
+
     @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<AttributeValue> attributeValues;

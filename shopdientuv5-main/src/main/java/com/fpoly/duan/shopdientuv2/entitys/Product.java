@@ -5,6 +5,7 @@ package com.fpoly.duan.shopdientuv2.entitys;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,7 +19,6 @@ public class Product {
 
     private String name;
     private String description;
-    private Double price;
     private Boolean isActive;
 
     @ManyToOne
@@ -26,6 +26,6 @@ public class Product {
     private Category category;
     
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonManagedReference
     private List<ProductAttribute> productAttributes;
 }

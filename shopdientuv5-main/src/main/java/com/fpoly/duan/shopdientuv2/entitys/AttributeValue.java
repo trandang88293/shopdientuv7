@@ -1,5 +1,11 @@
 package com.fpoly.duan.shopdientuv2.entitys;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,4 +27,7 @@ public class AttributeValue {
     @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
 
+    @OneToMany(mappedBy = "value", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ProductAttributeValue> productAttributeValues;
 }

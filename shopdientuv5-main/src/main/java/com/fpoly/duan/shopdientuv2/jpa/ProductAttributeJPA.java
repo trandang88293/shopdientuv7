@@ -13,4 +13,5 @@ public interface ProductAttributeJPA extends JpaRepository<ProductAttribute, Int
 
     @Query("SELECT pa FROM ProductAttribute pa WHERE pa.product.productId = :productId")
     List<ProductAttribute> findByProductId(Integer productId);
+
 }

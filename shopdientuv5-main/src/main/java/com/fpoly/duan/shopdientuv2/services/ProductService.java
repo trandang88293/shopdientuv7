@@ -2,9 +2,13 @@ package com.fpoly.duan.shopdientuv2.services;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.cloudinary.Cloudinary;
 import com.fpoly.duan.shopdientuv2.entitys.Category;
 import com.fpoly.duan.shopdientuv2.entitys.Product;
 import com.fpoly.duan.shopdientuv2.jpa.CategoryJPA;
@@ -17,8 +21,14 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class ProductService {
 
-    private final ProductJPA productJPA;
+    @Autowired
+    private ProductJPA productJPA;
+
+    @Autowired
     private final CategoryJPA categoryJPA;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     public List<Product> getAllListProducts() {
         return productJPA.findAll();
@@ -41,7 +51,6 @@ public class ProductService {
         return productJPA.findById(id).map(product -> {
             product.setName(productDetails.getName());
             product.setDescription(productDetails.getDescription());
-            product.setPrice(productDetails.getPrice());
             product.setIsActive(productDetails.getIsActive());
             product.setCategory(categoryJPA.findById(productDetails.getCategory().getCategoryId())
                     .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại!")));
