@@ -27,7 +27,7 @@ import com.fpoly.duan.shopdientuv2.services.ProductAttributeService;
 @RestController
 @RequestMapping("/admin/product-attribute")
 public class ProductAttributeController {
-    
+
     @Autowired
     private ProductAttributeService productAttributeService;
 
@@ -41,18 +41,21 @@ public class ProductAttributeController {
             @RequestPart("imageUrl") MultipartFile image) {
         try {
             ProductAttribute productAttribute = objectMapper.readValue(productAttributeJson, ProductAttribute.class);
-            ProductAttribute savedProductAttribute = productAttributeService.addProductAttribute(productId, productAttribute, image);
+            ProductAttribute savedProductAttribute = productAttributeService.addProductAttribute(productId,
+                    productAttribute, image);
             return new ResponseEntity<>(savedProductAttribute, HttpStatus.CREATED);
         } catch (IOException e) {
-            return new ResponseEntity<>("Error processing request: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error processing request: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-     @GetMapping("/get-by-id/{productId}")
+    @GetMapping("/get-by-id/{productId}")
     public ResponseEntity<ResponseData> getProductAttributes(@PathVariable Integer productId) {
         ResponseData responseData = new ResponseData();
         try {
-            List<ProductAttribute> productAttributes = productAttributeService.getProductAttributesByProductId(productId);
+            List<ProductAttribute> productAttributes = productAttributeService
+                    .getProductAttributesByProductId(productId);
             if (!productAttributes.isEmpty()) {
                 responseData.setStatus(true);
                 responseData.setMessage("Lấy biến thể sản phẩm thành công");
@@ -74,10 +77,10 @@ public class ProductAttributeController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<ProductAttribute> updateProductAttribute(
-            @PathVariable Integer id, 
+            @PathVariable Integer id,
             @RequestBody ProductAttribute updatedProductAttribute) {
         ProductAttribute productAttribute = productAttributeService.updateProductAttribute(id, updatedProductAttribute);
-        
+
         if (productAttribute != null) {
             return new ResponseEntity<>(productAttribute, HttpStatus.OK);
         } else {
@@ -87,31 +90,31 @@ public class ProductAttributeController {
 
     // Xóa ProductAttribute
     @DeleteMapping("/delete/{id}")
-public ResponseEntity<ResponseData> deleteProductAttribute(@PathVariable Integer id) {
-    ResponseData responseData = new ResponseData();
-    try {
-        boolean deleted = productAttributeService.deleteProductAttribute(id);
+    public ResponseEntity<ResponseData> deleteProductAttribute(@PathVariable Integer id) {
+        ResponseData responseData = new ResponseData();
+        try {
+            boolean deleted = productAttributeService.deleteProductAttribute(id);
 
-        if (deleted) {
-            responseData.setStatus(true);
-            responseData.setMessage("Xóa biến thể sản phẩm thành công");
-            responseData.setData(null); // Không cần dữ liệu trả về trong trường hợp xóa thành công
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
-        } else {
+            if (deleted) {
+                responseData.setStatus(true);
+                responseData.setMessage("Xóa biến thể sản phẩm thành công");
+                responseData.setData(null); // Không cần dữ liệu trả về trong trường hợp xóa thành công
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
+            } else {
+                responseData.setStatus(false);
+                responseData.setMessage("Không tìm thấy biến thể sản phẩm để xóa");
+                responseData.setData(null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+        } catch (Exception e) {
             responseData.setStatus(false);
-            responseData.setMessage("Không tìm thấy biến thể sản phẩm để xóa");
+            responseData.setMessage("Lỗi: " + e.getMessage());
             responseData.setData(null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
-    } catch (Exception e) {
-        responseData.setStatus(false);
-        responseData.setMessage("Lỗi: " + e.getMessage());
-        responseData.setData(null);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
     }
-}
 
-@GetMapping("/active-with-variant")
+    @GetMapping("/active-with-variant")
     public ResponseEntity<ResponseData> getActiveProductsWithFirstAttribute() {
         ResponseData responseData = new ResponseData();
         try {
