@@ -88,4 +88,22 @@ public class CartService {
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
         return cartDetailsRepository.findByCart(cart);
     }
+
+    // Lấy đối tượng Account dựa trên username (dùng trong quá trình đặt hàng)
+    public Account getAccountByUsername(String username) {
+        return accountRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
+    // Xóa giỏ hàng của người dùng (xóa tất cả các sản phẩm trong giỏ)
+    public void clearCart(String username) {
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        Cart cart = cartRepository.findByAccount(account).orElse(null);
+        if (cart != null) {
+            List<CartDetails> items = cartDetailsRepository.findByCart(cart);
+            cartDetailsRepository.deleteAll(items);
+        }
+    }
+
 }

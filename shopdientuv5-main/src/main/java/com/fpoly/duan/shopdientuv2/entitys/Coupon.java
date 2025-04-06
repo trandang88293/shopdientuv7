@@ -3,11 +3,15 @@ package com.fpoly.duan.shopdientuv2.entitys;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Getter
+@Setter
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

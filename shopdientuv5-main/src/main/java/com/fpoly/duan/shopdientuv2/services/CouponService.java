@@ -51,4 +51,14 @@ public class CouponService {
     public void deleteCoupon(Integer id) {
         couponRepository.deleteById(id);
     }
+
+    public void reduceCouponQuantity(Integer couponId, int usedCount) {
+        // Lấy mã giảm giá và cập nhật số lượng mã còn lại
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new RuntimeException("Coupon không tồn tại"));
+        // Giả sử coupon có trường quantity cho số lượng còn lại
+        coupon.setQuantity(coupon.getQuantity() - usedCount);
+        couponRepository.save(coupon);
+    }
+
 }

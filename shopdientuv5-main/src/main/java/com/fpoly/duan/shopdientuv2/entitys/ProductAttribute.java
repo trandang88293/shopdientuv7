@@ -2,11 +2,8 @@ package com.fpoly.duan.shopdientuv2.entitys;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -35,11 +32,10 @@ public class ProductAttribute {
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference // Use back reference here to match with the managed reference in Product
     private Product product;
 
     @OneToMany(mappedBy = "productAttribute", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ProductAttributeValue> productAttributeValues;
 }
-

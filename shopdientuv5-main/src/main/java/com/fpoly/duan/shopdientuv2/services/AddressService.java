@@ -78,4 +78,9 @@ public class AddressService {
 
         addressRepository.delete(existing);
     }
+
+    public Address getAddressById(Integer addressId) {
+        return addressRepository.findById(addressId).orElse(null);
+    }
+
 }
