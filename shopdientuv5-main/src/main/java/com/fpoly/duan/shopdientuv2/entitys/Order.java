@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -19,7 +18,13 @@ public class Order {
 
     private LocalDateTime orderDate;
     private Double totalAmount;
-    private String status;
+    // 0: Đang xử lý, 1: Chờ Xác Nhận, 2: Đang Giao Hàng, 3: Đã giao
+    private Integer status;
+
+    // Lưu hình thức thanh toán: "VNPAY" hoặc "COD" hoặc URL thanh toán khi dùng
+    // VNPAY
+    @Column(length = 1000) // Tăng kích thước cột để chứa URL thanh toán dài hơn
+    private String paymentMethod;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false)

@@ -1,7 +1,6 @@
 package com.fpoly.duan.shopdientuv2.entitys;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +18,7 @@ public class OrderDetails {
     private Integer quantity;
     private Double price;
 
-     @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     @JsonBackReference
     private Order order;

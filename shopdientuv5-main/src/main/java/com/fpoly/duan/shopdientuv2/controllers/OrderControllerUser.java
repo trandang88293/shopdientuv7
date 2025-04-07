@@ -9,28 +9,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/payment")
 @CrossOrigin(origins = "http://localhost:3000")
 public class OrderControllerUser {
 
     @Autowired
     private OrderServiceUser orderService;
 
-    /**
-     * Endpoint để đặt hàng với thông tin truyền qua body (JSON):
-     * - addressId: ID địa chỉ giao hàng
-     * - couponId: ID mã giảm giá (tuỳ chọn)
-     */
     @PostMapping("/place")
-    public ResponseEntity<ResponseData> placeOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<ResponseData> placeOrder(@RequestBody OrderRequest orderRequest,
+            @RequestParam String username) {
         ResponseData responseData = new ResponseData();
         try {
-            Order newOrder = orderService.placeOrder(orderRequest);
+            Order newOrder = orderService.placeOrder(orderRequest, username);
             responseData.setStatus(true);
-            responseData.setMessage("Đặt hàng thành công");
+            // Nếu thanh toán VNPAY thì trả về URL để FE chuyển hướng
+            if ("VNPAY".equalsIgnoreCase(orderRequest.getPaymentMethod())) {
+                responseData.setMessage("Đặt hàng thành công, chuyển sang thanh toán VNPAY");
+            } else {
+                responseData.setMessage("Đặt hàng thành công");
+            }
             responseData.setData(newOrder);
             return ResponseEntity.ok(responseData);
         } catch (Exception e) {
+            e.printStackTrace();
             responseData.setStatus(false);
             responseData.setMessage("Lỗi khi đặt hàng: " + e.getMessage());
             responseData.setData(null);

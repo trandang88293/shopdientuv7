@@ -1,6 +1,10 @@
 package com.fpoly.duan.shopdientuv2.jpa;
 
 import com.fpoly.duan.shopdientuv2.entitys.Order;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +17,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "WHERE LOWER(o.account.username) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(o.account.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Order> searchOrders(@Param("keyword") String keyword, Pageable pageable);
+
+    List<Order> findByStatusAndOrderDateBefore(Integer status, LocalDateTime time);
+
 }
