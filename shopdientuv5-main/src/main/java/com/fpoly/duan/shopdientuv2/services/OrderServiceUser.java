@@ -218,4 +218,8 @@ public class OrderServiceUser {
         order.setStatus(-1);
         orderRepository.save(order);
     }
+
+    public List<Order> getOrdersByUsername(String username) {
+        return orderRepository.findByAccountUsername(username);
+    }
 }

@@ -1,11 +1,15 @@
+// src/main/java/com/fpoly/duan/shopdientuv2/entitys/Comment.java
 package com.fpoly.duan.shopdientuv2.entitys;
 
-
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,10 +20,13 @@ public class Comment {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "accountId")
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @ManyToOne
-    @JoinColumn(name = "orderDetailsId")
+    @JoinColumn(name = "order_details_id")
     private OrderDetails orderDetails;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentImages> commentImages;
 }

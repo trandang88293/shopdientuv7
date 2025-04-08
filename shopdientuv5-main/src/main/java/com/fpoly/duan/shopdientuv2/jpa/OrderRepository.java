@@ -20,4 +20,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findByStatusAndOrderDateBefore(Integer status, LocalDateTime time);
 
+    // Hàm tự động sinh SELECT * FROM orders WHERE account.username = ?1
+    List<Order> findByAccountUsername(String username);
 }

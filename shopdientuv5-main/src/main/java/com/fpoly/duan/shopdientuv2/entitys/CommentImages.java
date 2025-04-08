@@ -1,6 +1,5 @@
 package com.fpoly.duan.shopdientuv2.entitys;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
