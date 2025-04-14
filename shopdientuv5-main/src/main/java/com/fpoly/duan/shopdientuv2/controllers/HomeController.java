@@ -10,20 +10,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fpoly.duan.shopdientuv2.dto.CategoryDTO;
 import com.fpoly.duan.shopdientuv2.entitys.Product;
 import com.fpoly.duan.shopdientuv2.reps.ResponseData;
+import com.fpoly.duan.shopdientuv2.services.CategoryService;
 import com.fpoly.duan.shopdientuv2.services.ProductAttributeService;
 import com.fpoly.duan.shopdientuv2.services.ProductService;
 
 @RestController
 @RequestMapping("/home")
 public class HomeController {
-    
+
     @Autowired
     private ProductAttributeService productAttributeService;
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @GetMapping("/product/get-all")
     public ResponseEntity<ResponseData> getActiveProductsWithFirstAttribute() {
@@ -63,6 +68,23 @@ public class HomeController {
             responseData.setMessage("Lỗi: " + e.getMessage());
             responseData.setData(null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+    }
+
+    @GetMapping("/category/get-all")
+    public ResponseEntity<ResponseData> list() {
+        ResponseData responseData = new ResponseData();
+        try {
+            List<CategoryDTO> categoryDTOs = categoryService.Danhsach();
+            responseData.setStatus(true);
+            responseData.setMessage("Lấy danh sách danh mục thành công");
+            responseData.setData(categoryDTOs);
+            return ResponseEntity.ok(responseData);
+        } catch (Exception e) {
+            responseData.setStatus(false);
+            responseData.setMessage("Lỗi khi lấy danh sách: " + e.getMessage());
+            responseData.setData(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
         }
     }
 }

@@ -42,8 +42,7 @@ public class CouponController {
 
     @PutMapping("/{id}")
     public Coupon updateCoupon(@PathVariable Integer id, @RequestBody Coupon coupon) {
-        // Nếu code rỗng thì có thể sinh lại hoặc giữ nguyên mã cũ (tùy vào yêu cầu của
-        // bạn)
+        // Nếu code rỗng thì sinh lại mã coupon
         if (coupon.getCode() == null || coupon.getCode().trim().isEmpty()) {
             coupon.setCode(generateRandomCode());
         }
@@ -52,8 +51,9 @@ public class CouponController {
 
     @DeleteMapping("/{id}")
     public String deleteCoupon(@PathVariable Integer id) {
+        // Thay vì xóa coupon hoàn toàn, cập nhật số lượng về 0
         couponService.deleteCoupon(id);
-        return "Đã xóa coupon có ID: " + id;
+        return "Đã cập nhật số lượng coupon về 0 với ID: " + id;
     }
 
     // Phương thức tạo mã coupon ngẫu nhiên gồm 8 ký tự (có thể điều chỉnh độ dài

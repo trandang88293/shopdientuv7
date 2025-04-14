@@ -38,15 +38,25 @@ public class ProductAttributeController {
     public ResponseEntity<?> addProductAttribute(
             @PathVariable Integer productId,
             @RequestParam("productAttribute") String productAttributeJson,
-            @RequestPart("imageUrl") MultipartFile image) {
+            @RequestPart(value = "imageUrl", required = false) MultipartFile image) {
         try {
             ProductAttribute productAttribute = objectMapper.readValue(productAttributeJson, ProductAttribute.class);
             ProductAttribute savedProductAttribute = productAttributeService.addProductAttribute(productId,
                     productAttribute, image);
             return new ResponseEntity<>(savedProductAttribute, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            // Catch specific exceptions thrown from the service layer
+            if (e.getMessage().contains("The variant is exist")) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT); // 409 Conflict
+            } else if (e.getMessage().contains("Product not found")) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND); // 404 Not Found
+            } else {
+                return new ResponseEntity<>("Lỗi khi thêm biến thể: " + e.getMessage(),
+                        HttpStatus.BAD_REQUEST); // 400 Bad Request for other service errors
+            }
         } catch (IOException e) {
-            return new ResponseEntity<>("Error processing request: " + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Lỗi xử lý yêu cầu: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR); // 500 Internal Server Error for JSON parsing issues
         }
     }
 
@@ -76,15 +86,17 @@ public class ProductAttributeController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ProductAttribute> updateProductAttribute(
+    public ResponseEntity<?> updateProductAttribute(
             @PathVariable Integer id,
-            @RequestBody ProductAttribute updatedProductAttribute) {
-        ProductAttribute productAttribute = productAttributeService.updateProductAttribute(id, updatedProductAttribute);
-
-        if (productAttribute != null) {
-            return new ResponseEntity<>(productAttribute, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            @RequestBody ProductAttribute productAttribute) {
+        try {
+            productAttribute.setId(id); // gán lại ID từ path
+            ProductAttribute updated = productAttributeService.updateProductAttribute(productAttribute);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server: " + ex.getMessage());
         }
     }
 

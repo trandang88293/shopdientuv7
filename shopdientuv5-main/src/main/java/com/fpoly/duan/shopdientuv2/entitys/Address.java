@@ -21,7 +21,7 @@ public class Address {
     private String wardId;
     private String thirdPartyField;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "accountId", nullable = true)
     private Account account;
 }

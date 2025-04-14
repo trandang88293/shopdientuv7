@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,17 +47,21 @@ public class CouponService {
         }).orElseThrow(() -> new RuntimeException("Coupon not found"));
     }
 
+    /**
+     * Thay vì xóa coupon, cập nhật số lượng coupon về 0.
+     */
     public void deleteCoupon(Integer id) {
-        couponRepository.deleteById(id);
+        Coupon coupon = couponRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coupon không tồn tại"));
+        coupon.setQuantity(0);
+        couponRepository.save(coupon);
     }
 
     public void reduceCouponQuantity(Integer couponId, int usedCount) {
         // Lấy mã giảm giá và cập nhật số lượng mã còn lại
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new RuntimeException("Coupon không tồn tại"));
-        // Giả sử coupon có trường quantity cho số lượng còn lại
         coupon.setQuantity(coupon.getQuantity() - usedCount);
         couponRepository.save(coupon);
     }
-
 }

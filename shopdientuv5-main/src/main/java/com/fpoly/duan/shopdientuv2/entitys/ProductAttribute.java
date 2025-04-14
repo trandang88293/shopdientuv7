@@ -5,6 +5,7 @@ import lombok.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "product_attribute")
@@ -32,10 +33,16 @@ public class ProductAttribute {
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    @JsonBackReference // Use back reference here to match with the managed reference in Product
+    @JsonBackReference // Giữ annotation này để tránh vòng lặp khi serialize
     private Product product;
 
     @OneToMany(mappedBy = "productAttribute", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ProductAttributeValue> productAttributeValues;
+
+    // Getter tùy chỉnh trả về tên sản phẩm từ đối tượng product
+    @JsonProperty("productName")
+    public String getProductName() {
+        return product != null ? product.getName() : null;
+    }
 }

@@ -98,21 +98,24 @@ public class OrderServiceUser {
     // Đặt hàng: tạo đơn hàng với trạng thái pending nếu thanh toán VNPAY
     @Transactional(rollbackFor = Exception.class)
     public Order placeOrder(OrderRequest orderRequest, String username) {
-        // Lấy địa chỉ giao hàng
+        // Lấy địa chỉ giao hàng theo id
         Address address = addressService.getAddressById(orderRequest.getAddressId());
         if (address == null) {
             throw new RuntimeException("Địa chỉ không hợp lệ");
         }
+
         // Lấy giỏ hàng của người dùng
         List<CartDetails> cartItems = cartService.getCartByUsername(username);
         if (cartItems.isEmpty()) {
             throw new RuntimeException("Giỏ hàng trống");
         }
+
         // Tính tổng tiền sản phẩm
         BigDecimal totalProducts = cartItems.stream()
                 .map(item -> BigDecimal.valueOf(item.getProductAttribute().getPrice())
                         .multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         // Tính tổng trọng lượng
         BigDecimal totalWeight = cartItems.stream()
                 .map(item -> DEFAULT_WEIGHT.multiply(BigDecimal.valueOf(item.getQuantity())))
@@ -120,6 +123,7 @@ public class OrderServiceUser {
         if (totalWeight.compareTo(MAX_WEIGHT) > 0) {
             totalWeight = MAX_WEIGHT;
         }
+
         // Tính phí vận chuyển
         Integer shippingFeeInt = shippingService.calculateShippingFee(address, totalWeight.intValue());
         BigDecimal shippingFee = BigDecimal.valueOf(shippingFeeInt);
@@ -146,7 +150,6 @@ public class OrderServiceUser {
         order.setOrderDate(LocalDateTime.now());
         order.setTotalAmount(totalOrder.doubleValue());
         order.setAccount(address.getAccount());
-        order.setAddress(address);
         order.setCoupon(coupon);
         order.setPaymentMethod(orderRequest.getPaymentMethod());
         // Nếu VNPAY: trạng thái pending, nếu COD: ngay thành công (status = 1)
@@ -155,6 +158,15 @@ public class OrderServiceUser {
         } else {
             order.setStatus(1); // đã thanh toán
         }
+
+        // Snapshot thông tin địa chỉ thành chuỗi
+        String addressInfo = String.format(
+                " Tỉnh/TP: %s, Quận/Huyện: %s, Phường/Xã: %s, Ghi chú: %s",
+                address.getProvinceId(),
+                address.getDistrictId(),
+                address.getWardId(),
+                address.getThirdPartyField());
+        order.setAddressInfo(addressInfo);
 
         Order savedOrder = orderRepository.save(order);
 
@@ -184,6 +196,7 @@ public class OrderServiceUser {
         } else {
             // Với VNPAY: trả về URL thanh toán cho FE
             String paymentUrl = generateVnPayUrl(savedOrder);
+            // Ghi đè lại trường paymentMethod thành URL thanh toán
             savedOrder.setPaymentMethod(paymentUrl);
         }
         return savedOrder;
@@ -194,10 +207,9 @@ public class OrderServiceUser {
     public void confirmOrderAfterPayment(Integer orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
-        // Cập nhật trạng thái thành đã thanh toán
         order.setStatus(1);
         orderRepository.save(order);
-        // Xử lý giảm tồn kho, giảm số lượng coupon, xóa giỏ hàng...
+        // Giảm tồn kho, giảm số lượng coupon, xóa giỏ hàng...
         List<OrderDetails> orderDetails = order.getOrderDetails();
         for (OrderDetails detail : orderDetails) {
             productService.reduceStock(detail.getProductAttribute().getId(), detail.getQuantity());
@@ -205,7 +217,6 @@ public class OrderServiceUser {
         if (order.getCoupon() != null) {
             couponService.reduceCouponQuantity(order.getCoupon().getCouponId(), 1);
         }
-        // Xóa giỏ hàng của người dùng
         cartService.clearCart(order.getAccount().getUsername());
     }
 
@@ -214,7 +225,6 @@ public class OrderServiceUser {
     public void cancelOrderAfterPayment(Integer orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
-        // Có thể cập nhật trạng thái hủy (ví dụ: status = -1) hoặc xóa đơn hàng
         order.setStatus(-1);
         orderRepository.save(order);
     }

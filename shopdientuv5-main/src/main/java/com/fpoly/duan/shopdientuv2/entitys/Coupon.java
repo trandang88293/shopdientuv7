@@ -41,6 +41,5 @@ public class Coupon {
     private LocalDateTime endDate;
 
     @NotNull(message = "Số lượng coupon không được để trống")
-    @Min(value = 1, message = "Số lượng coupon phải lớn hơn hoặc bằng 1")
     private Integer quantity;
 }

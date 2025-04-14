@@ -21,6 +21,7 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference // This is the forward (managed) part of the relationship
+    @JsonManagedReference // Đây là phần hiển thị khi serialize, đối với ProductAttribute sử dụng
+                          // @JsonBackReference
     private List<ProductAttribute> productAttributes;
 }
